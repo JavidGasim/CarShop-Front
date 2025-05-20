@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <section style={{paddingBottom:"100px"}}>
-        <Header></Header>
+        {/* <Header></Header> */}
         <Menu></Menu>
         <section style={{width:"73%",margin:"auto",textWrap:"wrap"}}>
           
