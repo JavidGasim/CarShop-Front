@@ -1,0 +1,51 @@
+.head-section
+{
+    display:flex;
+    justify-content:space-between;
+    background-color:#F6F7FA !important;
+    padding: 10px 0px;
+
+}
+
+.a-design{
+    font-size: 1.5em;
+    color: grey;
+    margin-left: 30px;
+    text-decoration: none;
+}
+
+.h1-design
+{
+    font-size: 1.3em;
+    color: grey;
+    margin-left: 30px;
+    text-decoration: none;
+}
+.h1-design2
+{
+    font-size: 1.3em;
+    color: black;
+    margin-left: 30px;
+}
+
+.heart{
+    display: flex;
+    justify-content: start;
+}
+
+.a-design:hover{
+    color: red;
+    cursor: pointer;
+}
+.h1-design:hover{
+    color: red;
+    cursor: pointer;
+}
+.heart:hover{
+    color: red;
+    cursor: pointer;
+}
+.h1-design2:hover{
+    color: red;
+    cursor: pointer;
+}

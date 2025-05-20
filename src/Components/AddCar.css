@@ -1,0 +1,47 @@
+label{
+    font-size: 1.6em;
+    margin-top: 5px;
+}
+
+input{
+    width: 30%;
+    border-radius: 10px;
+    border: solid grey 2px;
+    padding: 10px;
+    font-size: 1.2em;
+    margin-left: 100px;
+
+}
+
+select{
+    width: 31.8%;
+    border-radius: 10px;
+    border: solid grey 2px;
+    padding: 10px;
+    font-size: 1.2em;
+    margin-left: 100px;
+}
+
+textarea{
+    margin-left:30px;
+    padding:10px;
+    width:50%;
+    height:15vh;
+    font-size:1.2em;
+    border-radius:10px;
+    border:2px solid black;
+}
+
+button{
+    margin:auto;
+    margin-top:50px;
+    font-size:1.5em;
+    padding:20px;
+    background-color:green;
+    color:white;
+    border-radius:10px;
+    border:3px solid black;
+    width:25%;
+    margin-left:37.5%;
+    font-weight:bolder;
+}
