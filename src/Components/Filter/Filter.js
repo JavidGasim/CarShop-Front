@@ -365,7 +365,7 @@ export default function Filter() {
             width: "20%",
             marginLeft: "78%",
             marginRight: "30px",
-            padding: "20px 0px 20px 0px",
+            padding: "15px 0px 15px 0px",
             textAlign: "center",
             fontSize: "1.2em",
             backgroundColor: "#F97316 ",

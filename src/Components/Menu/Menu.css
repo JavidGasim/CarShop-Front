@@ -23,11 +23,18 @@
   /* height: 50px; */
   text-align: center;
   margin: 0;
-  padding: 10px 0;
+  padding: 10px 20px;
   font-size: 1rem;
-  background-color: #F97316 ;
+  font-weight: bold;
+  background-color: #f97316;
   border-radius: 10px;
   border: 2px solid black;
+  text-decoration: none;
+  color: white;
+}
+
+.auth-button:hover {
+  cursor: pointer;
 }
 
 .header-h1 {

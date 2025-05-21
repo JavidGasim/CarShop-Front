@@ -11,8 +11,10 @@ export default function Menu() {
         CarShop
       </Link>
       <section className="auth-section">
-        <button className="auth-button">Login</button>
-        <button className="auth-button">Register</button>
+        {/* <Link to="/login" className="link-button"> */}
+          <Link to="/login" className="auth-button">Login</Link>
+        {/* </Link> */}
+        <Link to="/register" className="auth-button">Register</Link>
       </section>
       {/* <button>Register</button> */}
       {/* <Link to="/" className='h1-des'>All Elanlar</Link> */}
