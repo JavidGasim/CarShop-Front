@@ -22,9 +22,10 @@ export default function Register() {
   });
 
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(null);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [message, setMessage] = useState("");
+  const [iSverifyCode, setiSVerifyCode] = useState(false);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -172,34 +173,51 @@ export default function Register() {
 
   const sendCode = async () => {
     var url = generalUrl + `Account/send-code`;
+    setIsCodeSent(true);
 
     console.log(formData.email);
-    
+
     var obj = {
-      email: formData.email
-    }
+      email: formData.email,
+    };
 
     try {
-      const response = await axios.post(url, obj );
-      setIsCodeSent(true);
+      const response = await axios.post(url, null, {
+        params: {
+          email: formData.email,
+        },
+      });
+
+      setiSVerifyCode(true);
+      setIsCodeSent(false);
       setMessage("Verification code sent to your email!");
       alert("send successfuly");
     } catch (error) {
       setMessage("Error sending code, try again!");
       alert(error.response.data.message);
-      
     }
   };
 
-  // Kodun doğrulanması — backendə POST request
+  // Kodun doğrulanması — backendə POST request0
   const verifyCode = async () => {
     var url = generalUrl + `Account/verify-code`;
+
+    var obj = {
+      email: formData.email,
+      code: code,
+    };
+
+    console.log(code);
+
     try {
-      const response = await axios.post(url, {
-        email,
-        code,
+      const response = await axios.post(url, null, {
+        params: {
+          code: Number(code),
+        },
       });
       setMessage("Verification successful! You can complete registration.");
+      alert("Verification successful! You can complete registration.");
+      RegisterUser();
       // Burada növbəti addıma keçid edə bilərsən, məsələn qeydiyyat formu göstərmək
     } catch (error) {
       setMessage("Invalid code. Please try again.");
@@ -303,9 +321,41 @@ export default function Register() {
             value={formData.city}
             onChange={handleChange}
           />
-          <button type="submit" className="register-button">
-            Next
-          </button>
+
+          {isCodeSent ? (
+            <img
+              src="/load.gif"
+              alt="loading"
+              style={{ width: "50px", margin: "auto", marginTop: "10px" }}
+            />
+          ) : (
+            <button type="submit" className="register-button">
+              Next
+            </button>
+          )}
+          {iSverifyCode ? (
+            <div>
+              <input
+                type="number"
+                name="code"
+                className="register-input"
+                placeholder="Code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <button
+                type="button"
+                className="register-button"
+                onClick={verifyCode}
+              >
+                Verify
+              </button>
+            </div>
+          ) : null}
+          {/* {
+            message && <p style={{ marginTop: "20px", marginBottom: "10px" }}>{message}</p>
+    
+          } */}
           <p style={{ marginTop: "20px", marginBottom: "10px" }}>
             You have account? <Link to="/login">Login</Link>
           </p>
