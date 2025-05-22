@@ -95,3 +95,19 @@
   background-color: #96d032;
   cursor: pointer;
 }
+
+.profile-image {
+  width: 40px; /* Şəklin eni */
+  height: 40px; /* Şəklin hündürlüyü */
+  border-radius: 50%; /* Dairəvi forma */
+  object-fit: cover; /* Şəklin konteynerə uyğun gəlməsi */
+  border: 2px solid #4caf50; /* İstəyə görə çərçivə rəngi və qalınlığı */
+  cursor: pointer; /* Maus üzərində göstərici dəyişir */
+  transition: transform 0.3s ease; /* Hover effekti üçün yumşaq keçid */
+  margin-top: 7px;
+}
+
+.profile-image:hover {
+  transform: scale(1.1); /* Hover zamanı ölçünü bir az böyüdür */
+  border-color: #388e3c; /* Hover zamanı çərçivə rəngini dəyişir */
+}

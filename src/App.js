@@ -11,6 +11,7 @@ import AllInfo from "./Components/AllInfo";
 import FilteredCars from "./Components/FilteredCars/FilteredCars";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
+import Main from "./Components/Main/Main";
 
 function App() {
   return (
@@ -68,6 +69,12 @@ function App() {
               path="/register"
               element={<Register />}
               component={Register}
+            ></Route>
+            <Route
+              exact
+              path="/main"
+              element={<Main />}
+              component={Main}
             ></Route>
 
             <Route exact path="*" element={<Cars />} component={Cars}></Route>
