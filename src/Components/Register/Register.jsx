@@ -21,6 +21,11 @@ export default function Register() {
     city: "",
   });
 
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [message, setMessage] = useState("");
+
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -85,6 +90,8 @@ export default function Register() {
     data.append("password", formData.password);
     data.append("phoneNumber", formData.phoneNumber);
     data.append("city", formData.city);
+
+    setEmail(formData.email);
     if (imageFile) {
       data.append("image", imageFile);
     }
@@ -118,14 +125,15 @@ export default function Register() {
       });
 
     if (message === "") {
-      RegisterUser();
+      // RegisterUser();
+      sendCode();
     } else {
       alert(message);
     }
   };
 
   function RegisterUser() {
-    var url = generalUrl + `Account/register`;
+    var url = generalUrl + `Account/send-code`;
 
     setRegisterLoad(true);
 
@@ -161,6 +169,42 @@ export default function Register() {
         setRegisterLoad(false);
       });
   }
+
+  const sendCode = async () => {
+    var url = generalUrl + `Account/send-code`;
+
+    console.log(formData.email);
+    
+    var obj = {
+      email: formData.email
+    }
+
+    try {
+      const response = await axios.post(url, obj );
+      setIsCodeSent(true);
+      setMessage("Verification code sent to your email!");
+      alert("send successfuly");
+    } catch (error) {
+      setMessage("Error sending code, try again!");
+      alert(error.response.data.message);
+      
+    }
+  };
+
+  // Kodun doğrulanması — backendə POST request
+  const verifyCode = async () => {
+    var url = generalUrl + `Account/verify-code`;
+    try {
+      const response = await axios.post(url, {
+        email,
+        code,
+      });
+      setMessage("Verification successful! You can complete registration.");
+      // Burada növbəti addıma keçid edə bilərsən, məsələn qeydiyyat formu göstərmək
+    } catch (error) {
+      setMessage("Invalid code. Please try again.");
+    }
+  };
 
   return (
     <div className="register-container">
@@ -260,7 +304,7 @@ export default function Register() {
             onChange={handleChange}
           />
           <button type="submit" className="register-button">
-            Register
+            Next
           </button>
           <p style={{ marginTop: "20px", marginBottom: "10px" }}>
             You have account? <Link to="/login">Login</Link>
