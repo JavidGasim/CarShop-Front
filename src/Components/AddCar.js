@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import "./AddCar.css";
 import axios from "axios";
 import { faMarker } from "@fortawesome/free-solid-svg-icons";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function AddCar() {
   const cookies = document.cookie.split(";");
@@ -14,6 +16,8 @@ export default function AddCar() {
     }
   });
   const [datas, setDatas] = useState([]);
+
+  const generalUrl = "https://localhost:7268/api/";
 
   const jsonUrl = "http://localhost:27001/cars";
   const id = useRef(0);
@@ -37,6 +41,147 @@ export default function AddCar() {
   const [url2, setUrl2] = useState();
   const [url3, setUrl3] = useState();
   const [description, setDescription] = useState();
+
+  const [imagePreview1, setImagePreview1] = useState(null);
+  const [imagePreview2, setImagePreview2] = useState(null);
+  const [imagePreview3, setImagePreview3] = useState(null);
+  const [imageUrl1, setImageUrl1] = useState("");
+  const [imageUrl2, setImageUrl2] = useState("");
+  const [imageUrl3, setImageUrl3] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleImageChange1 = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      // setImageFile(file); // backend-ə göndərmək üçün fayl
+      // setImagePreview(URL.createObjectURL(file)); // ön izləmə üçün
+      return;
+    }
+
+    const allowedFormats = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+    ];
+
+    if (!allowedFormats.includes(file.type)) {
+      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      return;
+    }
+
+    const newPreviewUrl = URL.createObjectURL(file);
+    setImagePreview1(newPreviewUrl);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7268/api/Image/newImage",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setImageUrl1(response.data.imageUrl);
+      console.log("Şəkil yükləndi:", response.data.imageUrl);
+    } catch (error) {
+      console.error("Yükləmə xətası:", error);
+    }
+  };
+
+  const handleImageChange2 = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      // setImageFile(file); // backend-ə göndərmək üçün fayl
+      // setImagePreview(URL.createObjectURL(file)); // ön izləmə üçün
+      return;
+    }
+
+    const allowedFormats = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+    ];
+
+    if (!allowedFormats.includes(file.type)) {
+      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      return;
+    }
+
+    const newPreviewUrl = URL.createObjectURL(file);
+    setImagePreview2(newPreviewUrl);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7268/api/Image/newImage",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setImageUrl2(response.data.imageUrl);
+      console.log("Şəkil yükləndi:", response.data.imageUrl);
+    } catch (error) {
+      console.error("Yükləmə xətası:", error);
+    }
+  };
+
+  const handleImageChange3 = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      // setImageFile(file); // backend-ə göndərmək üçün fayl
+      // setImagePreview(URL.createObjectURL(file)); // ön izləmə üçün
+      return;
+    }
+
+    const allowedFormats = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/webp",
+    ];
+
+    if (!allowedFormats.includes(file.type)) {
+      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      return;
+    }
+
+    const newPreviewUrl = URL.createObjectURL(file);
+    setImagePreview3(newPreviewUrl);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        "https://localhost:7268/api/Image/newImage",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setImageUrl3(response.data.imageUrl);
+      console.log("Şəkil yükləndi:", response.data.imageUrl);
+    } catch (error) {
+      console.error("Yükləmə xətası:", error);
+    }
+  };
 
   function selectNewOil(e) {
     setSelectedOil(e.target.value);
@@ -69,60 +214,92 @@ export default function AddCar() {
     });
   }
 
-  useEffect(() => {
-    GetMovies();
+  // useEffect(() => {
+  //   GetMovies();
+  // });
+
+  const [currentUser, setCurrentUser] = useState({
+    id: "",
+    userName: "",
+    firstName: "",
+    lastName: "",
+    profilePicture: "",
+    email: "",
+    phoneNumber: "",
+    city: "",
   });
 
-  function addNewCar() {
-    id.current = datas.length;
-    id.current++;
+  function CurrentUser() {
+    var url = generalUrl + `Account/currentUser`;
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
 
-    // document.cookie = `id=${id.current};path=/;`;
-    const car = {
-      id: String(`${id.current}`),
-      color: "white",
-      isFav: false,
-      url: url,
-      url2: url2,
-      url3: url3,
-      price: price,
-      city: city,
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((d) => {
+        console.log(d.data);
+        setCurrentUser(d.data.user);
+      })
+      .catch((err) => {
+        console.log("Xəta:", err.response?.status, err.response?.data);
+      });
+  }
+
+  useEffect(() => {
+    CurrentUser();
+  }, []);
+
+  function addNewCar() {
+    var url = generalUrl + `Car`;
+    // const timePart = Date.now() % 1000000; // Son 6 rəqəmi götür (max: 999999)
+    // const randomPart = Math.floor(Math.random() * 1000); // 0-999 arası
+    // const uniqueId = timePart * 1000 + randomPart;
+    // console.log(uniqueId); // məsələn: 1716475373829842 (bu artıq tam ədəddir)
+
+    var obj = {
+      // Id: uniqueId,
+      Color: color,
+      Url1: imageUrl1,
+      Url2: imageUrl2,
+      Url3: imageUrl3,
+      Price: price,
       Marka: marka,
       Model: model,
-      GraduationYear: year,
+      Year: year,
       BanType: banType,
-      Color: color,
-      Engine: engine + "/" + selectedOil,
+      Engine: engine,
       March: march,
       GearBox: selectedGearBox,
       Gear: selectedGear,
-      New: "",
-      Owners: selectedOwners,
+      IsNew: march == "0" ? "true" : "false",
       Situation: situation,
-      Market: selectedMarket,
       Description: description,
+      UserId: currentUser.id,
+      FuelType: selectedOil,
     };
-    axios.post(jsonUrl, car).then((data) => console.log(data));
 
-    setUrl("");
-    setPrice("");
-    setCity("");
-    setMarka("");
-    setModel("");
-    setYear("");
-    setBanType("");
-    setColor("");
-    setEngine("");
-    setSelectedOil("");
-    setMarch("");
-    setSelectedGearBox("");
-    setSelectedGear("");
-    setSelectedOwners("");
-    setSituation("");
-    setSelectedMarket("");
-    setDescription("");
-    setUrl2("");
-    setUrl3("");
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+
+    try {
+      axios
+        .post(url, obj, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((d) => {
+          console.log(d.data);
+          alert("Car added successfully!");
+          navigate("/cars");
+        });
+    } catch (err) {
+      console.log("Xəta:", err.response?.status, err.response?.data);
+    }
   }
   return (
     <section
@@ -192,6 +369,7 @@ export default function AddCar() {
               required
               value={selectedGear}
               onChange={(e) => selectNewGear(e)}
+              style={{ width: "150px" }}
             >
               <option value=""></option>
               <option value="Rear">Rear</option>
@@ -211,6 +389,7 @@ export default function AddCar() {
               required
               value={selectedOil}
               onChange={(e) => selectNewOil(e)}
+              style={{ width: "180px" }}
             >
               <option value=""></option>
               <option value="Petrol">Petrol</option>
@@ -244,6 +423,7 @@ export default function AddCar() {
               required
               value={banType}
               onChange={(e) => setBanType(e.target.value)}
+              style={{ width: "150px" }}
             >
               <option value=""></option>
               <option value="Bus">Bus</option>
@@ -291,9 +471,9 @@ export default function AddCar() {
             <label>Gear Box</label>
             <select
               required
-              style={{ marginLeft: "55px" }}
               value={selectedGearBox}
               onChange={(e) => selectNewGearBox(e)}
+              style={{ width: "180px" }}
             >
               <option value=""></option>
               <option value="Automatic">Automatic</option>
@@ -418,7 +598,6 @@ export default function AddCar() {
             <input
               required
               value={engine}
-              style={{ marginLeft: "65px" }}
               onChange={(e) => setEngine(e.target.value)}
             ></input>
           </div>
@@ -427,71 +606,151 @@ export default function AddCar() {
         <section
           style={{
             display: "flex",
-            justifyContent: "start",
+            justifyContent: "space-between",
             paddingLeft: "30px",
             paddingRight: "30px",
             marginTop: "20px",
           }}
         >
-          <label>City</label>
-          <input
-            required
-            value={city}
-            style={{ marginLeft: "105px" }}
-            onChange={(e) => setCity(e.target.value)}
-          ></input>
-          <label style={{ marginLeft: "80px" }}>Url</label>
-          <input
-            required
-            value={url}
-            style={{ marginLeft: "190px" }}
-            onChange={(e) => setUrl(e.target.value)}
-          ></input>
+          <div
+            style={{
+              display: "flex",
+              width: " 40%",
+              justifyContent: "space-between",
+            }}
+          >
+            <label>City</label>
+            <input
+              required
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            ></input>
+          </div>
         </section>
         <section
           style={{
             display: "flex",
-            justifyContent: "start",
+            justifyContent: "space-between",
             paddingLeft: "30px",
             paddingRight: "30px",
             marginTop: "20px",
           }}
         >
-          <label>Url2</label>
-          <input
-            required
-            value={url2}
-            style={{ marginLeft: "125px" }}
-            onChange={(e) => setUrl2(e.target.value)}
-          ></input>
-          <label style={{ marginLeft: "75px" }}>Url3</label>
-          <input
-            required
-            value={url3}
-            style={{ marginLeft: "180px" }}
-            onChange={(e) => setUrl3(e.target.value)}
-          ></input>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: " 50%",
+              justifyContent: "space-between",
+            }}
+          >
+            <label style={{ textAlign: "center" }}>Image 1</label>
+            <div className="image-upload-wrapper">
+              <label htmlFor="upload-input-1" className="upload-label">
+                {imagePreview1 ? (
+                  <img
+                    src={imagePreview1}
+                    alt="Uploaded"
+                    className="preview-image"
+                  />
+                ) : (
+                  <div className="default-icon">📷</div>
+                )}
+              </label>
+              <input
+                type="file"
+                id="upload-input-1"
+                accept="image/*"
+                onChange={handleImageChange1}
+                style={{ display: "none" }}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: " 40%",
+              justifyContent: "space-between",
+            }}
+          >
+            <label style={{ textAlign: "center" }}>Image 2</label>
+            <div className="image-upload-wrapper">
+              <label htmlFor="upload-input-2" className="upload-label">
+                {imagePreview2 ? (
+                  <img
+                    src={imagePreview2}
+                    alt="Uploaded"
+                    className="preview-image"
+                  />
+                ) : (
+                  <div className="default-icon">📷</div>
+                )}
+              </label>
+              <input
+                type="file"
+                id="upload-input-2"
+                accept="image/*"
+                onChange={handleImageChange2}
+                style={{ display: "none" }}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: " 50%",
+              justifyContent: "space-between",
+            }}
+          >
+            <label style={{ textAlign: "center" }}>Image 3</label>
+            <div className="image-upload-wrapper">
+              <label htmlFor="upload-input-3" className="upload-label">
+                {imagePreview3 ? (
+                  <img
+                    src={imagePreview3}
+                    alt="Uploaded"
+                    className="preview-image"
+                  />
+                ) : (
+                  <div className="default-icon">📷</div>
+                )}
+              </label>
+              <input
+                type="file"
+                id="upload-input-3"
+                accept="image/*"
+                onChange={handleImageChange3}
+                style={{ display: "none" }}
+              />
+            </div>
+          </div>
         </section>
         <section
           style={{
             display: "flex",
-            justifyContent: "start",
+            justifyContent: "center",
             paddingLeft: "30px",
             paddingRight: "30px",
             marginTop: "50px",
           }}
         >
-          <label style={{ marginLeft: "250px", marginTop: "50px" }}>
+          {/* <label style={{ alignItems: "center", alignSelf: "center" }}>
             Description
-          </label>
+          </label> */}
           <textarea
             required
             value={description}
+            placeholder="Description"
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
         </section>
 
-        <button type="submit">ADD CAR</button>
+        <button type="submit" style={{ backgroundColor: "#f97316" }}>
+          ADD CAR
+        </button>
       </form>
     </section>
   );

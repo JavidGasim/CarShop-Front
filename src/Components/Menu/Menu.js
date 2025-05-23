@@ -33,26 +33,26 @@ export default function Menu() {
     console.log("All cookies deleted.");
   };
 
-  if (isLoggedIn) {
-    const name = Cookies.get("username");
-    const token = Cookies.get(name);
-    const url = generalUrl + `Account/currentUser`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        // setUser(response.data.user);
-        console.log(response.data);
-        // setArtist(response.data.user);
-        setCurrentUser(response.data.user);
-      })
-      .catch((error) => {
-        alert(error.response.data.message);
-      });
-  }
+  // if (isLoggedIn) {
+  //   const name = Cookies.get("username");
+  //   const token = Cookies.get(name);
+  //   const url = generalUrl + `Account/currentUser`;
+  //   axios
+  //     .get(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       // setUser(response.data.user);
+  //       console.log(response.data);
+  //       // setArtist(response.data.user);
+  //       setCurrentUser(response.data.user);
+  //     })
+  //     .catch((error) => {
+  //       alert(error.response.data.message);
+  //     });
+  // }
 
   return (
     <>
