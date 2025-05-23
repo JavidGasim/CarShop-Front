@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Register.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default function Register() {
   const generalUrl = "https://localhost:7268/api/";
@@ -134,7 +135,7 @@ export default function Register() {
   };
 
   function RegisterUser() {
-    var url = generalUrl + `Account/send-code`;
+    var url = generalUrl + `Account/register`;
 
     setRegisterLoad(true);
 
@@ -184,9 +185,11 @@ export default function Register() {
     try {
       const response = await axios.post(url, null, {
         params: {
-          email: formData.email,
+          email: obj.email,
         },
       });
+
+      Cookies.set("code", response.data.code);
 
       setiSVerifyCode(true);
       setIsCodeSent(false);
@@ -200,24 +203,35 @@ export default function Register() {
 
   // Kodun doğrulanması — backendə POST request0
   const verifyCode = async () => {
-    var url = generalUrl + `Account/verify-code`;
+    // var url = generalUrl + `Account/verify-code`;
 
-    var obj = {
-      email: formData.email,
-      code: code,
-    };
+    // var obj = {
+    //   email: formData.email,
+    //   code: code,
+    // };
 
-    console.log(code);
+    // console.log(code);
 
     try {
-      const response = await axios.post(url, null, {
-        params: {
-          code: Number(code),
-        },
-      });
-      setMessage("Verification successful! You can complete registration.");
-      alert("Verification successful! You can complete registration.");
-      RegisterUser();
+      // const response = await axios.post(url, null, {
+      //   params: {
+      //     code: Number(code),
+      //   },
+      // });
+
+      const verify = Cookies.get("code");
+      alert(verify);
+
+      if (verify == code) {
+        Cookies.remove("code");
+        setiSVerifyCode(false);
+        setMessage("Verification successful! You can complete registration.");
+        alert("Verification successful! You can complete registration.");
+        RegisterUser();
+      } else {
+        alert("Invalid code. Please try again.");
+      }
+
       // Burada növbəti addıma keçid edə bilərsən, məsələn qeydiyyat formu göstərmək
     } catch (error) {
       setMessage("Invalid code. Please try again.");
@@ -230,7 +244,7 @@ export default function Register() {
       {registerLoad ? (
         <div className="loader-container">
           <div className="loader">
-            <img src="/load.gif" alt="loading" />
+            <img style={{ width: "100px", margin: "auto" }} src="/load.gif" alt="loading" />
           </div>
         </div>
       ) : (
