@@ -248,7 +248,7 @@ export default function Filter() {
             step={100}
             style={{
               width: "50%",
-              fontSize: "1.2em",
+              fontSize: "1.5em",
               border: "2px solid grey",
               borderRight: "0px solid grey",
               borderRadius: "10px 0px 0px 10px",
@@ -268,7 +268,7 @@ export default function Filter() {
             step={100}
             style={{
               width: "50%",
-              fontSize: "1.2em",
+              fontSize: "1.5em",
               border: "2px solid grey",
               borderRadius: "0px 10px 10px 0px",
               padding: "10px",

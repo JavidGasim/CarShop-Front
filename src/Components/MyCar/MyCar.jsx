@@ -1,24 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import Cookies from "js-cookie";
 import axios from "axios";
 import AllInfo from "../AllInfo";
-import { Link, useNavigate } from "react-router-dom";
-import "./FilteredCar.css";
-import Cookies from "js-cookie";
-
-export default function FilteredCar({ d }) {
-  const [color, setColor] = useState(`${d.color}`);
-
+import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCar } from "../../Features/CarsSlice";
+import "../Cars/Car.css";
+export default function MyCar({ d }) {
   const url = "http://localhost:27001/cars";
-  const url2 = "http://localhost:27002/favCars";
+  // const url2 = "http://localhost:27002/favCars";
   const generalUrl = "https://localhost:7268/api/";
-  const [myFavs, setMyFavs] = useState([]);
-  const [selectedFavCar, setSelectedFavCar] = useState({});
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
+  const [myFavs, setMyFavs] = useState([]);
+  const [selectedFavCar, setSelectedFavCar] = useState({});
+
   const [isFav, setIsFav] = useState(false);
+
+  const CheckCarIsFav = async () => {
+    for (let i = 0; i < myFavs.length; i++) {
+      if (myFavs[i].id == d.id) {
+        setIsFav(true);
+        return true;
+      }
+    }
+    return false;
+  };
 
   const SelectedCarIsFav = (favs, car) => {
     console.log("favs:", favs);
@@ -112,13 +123,27 @@ export default function FilteredCar({ d }) {
       setIsFav(false);
       await GetMyFavs(); // yenilə favs
     }
+  }
 
+  function handleDeleteClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    alert("Id: " + d.id);
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+
+    axios
+      .delete(`${generalUrl}Car/${d.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((data) => alert("Deleted successfully"))
+      .catch((err) => alert(err));
   }
 
   return (
-    //target="_blank" rel="noopener noreferrer" -- new tab
     <Link to={`${d.id}`} className="main-des">
-      <FontAwesomeIcon
+      {/* <FontAwesomeIcon
         icon={faHeart}
         style={{
           position: "absolute",
@@ -128,7 +153,25 @@ export default function FilteredCar({ d }) {
           color: isFav ? "red" : "black",
         }}
         onClick={(e) => handleClick(e)}
-      />
+      /> */}
+      <button
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          width: "30px",
+          height: "30px",
+          fontSize: "1.5em",
+          backgroundColor: "transparent",
+          border: "none",
+          cursor: "pointer",
+          padding: "0",
+          margin: "0",
+        }}
+        onClick={(e) => handleDeleteClick(e)}
+      >
+        🗑️
+      </button>
       <img
         src={d.url1}
         style={{
@@ -136,6 +179,7 @@ export default function FilteredCar({ d }) {
           width: "300px",
           height: "250px",
         }}
+        alt="car"
       ></img>
       <h1
         style={{ fontWeight: "bolder", fontSize: "1.5em", marginLeft: "10px" }}
@@ -162,7 +206,7 @@ export default function FilteredCar({ d }) {
         }}
       >
         <p>{d.year}</p>
-        <p style={{ marginLeft: "10px" }}>{d.march}</p>
+        <p style={{ marginLeft: "10px" }}>{d.march} km</p>
       </section>
       <p style={{ marginLeft: "10px", fontSize: "1.3em" }}>{d.engine}</p>
       <p style={{ marginLeft: "10px", fontSize: "1.3em", color: "grey" }}>

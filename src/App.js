@@ -14,6 +14,8 @@ import Register from "./Components/Register/Register";
 import Main from "./Components/Main/Main";
 import Profile from "./Components/Profile/Profile";
 import UpdateProfile from "./Components/UpdateProfile/UpdateProfile";
+import MyPosts from "./Components/MyPosts/MyPosts";
+import EditMyCar from "./Components/EditMyCar/EditMyCar";
 
 function App() {
   return (
@@ -91,6 +93,20 @@ function App() {
               path="/updateProfile"
               element={<UpdateProfile />}
               component={UpdateProfile}
+            ></Route>
+
+            <Route
+              exact
+              path="/myAnnouncements"
+              element={<MyPosts />}
+              component={MyPosts}
+            ></Route>
+
+            <Route
+              exact
+              path="/myAnnouncements/:id"
+              element={<EditMyCar />}
+              component={EditMyCar}
             ></Route>
             <Route exact path="*" element={<Cars />} component={Cars}></Route>
           </Routes>

@@ -123,8 +123,6 @@ export default function Car({ d }) {
       setIsFav(false);
       await GetMyFavs(); // yenilə favs
     }
-
-    await axios.put(url + `/${d.id}`, d);
   }
 
   return (

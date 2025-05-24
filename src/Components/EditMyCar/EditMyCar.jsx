@@ -1,26 +1,36 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./AddCar.css";
 import axios from "axios";
-import { faMarker } from "@fortawesome/free-solid-svg-icons";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "./EditMyCar.css";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 
-export default function AddCar() {
-  const cookies = document.cookie.split(";");
-  let docId = null;
-  cookies.forEach((cookie) => {
-    const cookieParts = cookie.split("=");
-    const cookieName = cookieParts[0].trim();
-    if (cookieName === "id") {
-      docId = parseInt(cookieParts[1]);
-    }
+export default function EditMyCar() {
+  const { id } = useParams();
+  const [car, setCar] = useState({
+    id: null,
+    marka: "",
+    model: "",
+    year: "",
+    price: "",
+    description: "",
+    situation: "",
+    color: "",
+    banType: "",
+    march: "",
+    engine: "",
+    city: "",
+    url1: "",
+    url2: "",
+    url3: "",
+    fuelType: "",
+    gearBox: "",
+    gear: "",
+    owners: "",
+    market: "",
   });
-  const [datas, setDatas] = useState([]);
 
-  const generalUrl = "https://localhost:7268/api/";
+  const navigate = useNavigate();
 
-  const jsonUrl = "http://localhost:27001/cars";
-  const id = useRef(0);
   const [selectedOil, setSelectedOil] = useState("");
   const [selectedGear, setSelectedGear] = useState("");
   const [selectedGearBox, setSelectedGearBox] = useState("");
@@ -49,7 +59,16 @@ export default function AddCar() {
   const [imageUrl2, setImageUrl2] = useState("");
   const [imageUrl3, setImageUrl3] = useState("");
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    axios
+      .get(`https://localhost:7268/api/Car/${id}`)
+      .then((response) => {
+        setCar(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [id]);
 
   const handleImageChange1 = async (e) => {
     const file = e.target.files[0];
@@ -89,6 +108,8 @@ export default function AddCar() {
         }
       );
       setImageUrl1(response.data.imageUrl);
+      setCar({ ...car, url1: response.data.imageUrl });
+
       console.log("Şəkil yükləndi:", response.data.imageUrl);
     } catch (error) {
       console.error("Yükləmə xətası:", error);
@@ -133,6 +154,8 @@ export default function AddCar() {
         }
       );
       setImageUrl2(response.data.imageUrl);
+      setCar({ ...car, url2: response.data.imageUrl });
+
       console.log("Şəkil yükləndi:", response.data.imageUrl);
     } catch (error) {
       console.error("Yükləmə xətası:", error);
@@ -177,6 +200,8 @@ export default function AddCar() {
         }
       );
       setImageUrl3(response.data.imageUrl);
+      setCar({ ...car, url3: response.data.imageUrl });
+
       console.log("Şəkil yükləndi:", response.data.imageUrl);
     } catch (error) {
       console.error("Yükləmə xətası:", error);
@@ -195,114 +220,54 @@ export default function AddCar() {
     setSelectedGearBox(e.target.value);
   }
 
-  function selectNewMarket(e) {
-    setSelectedMarket(e.target.value);
-  }
-
-  function selectNewOwners(e) {
-    setSelectedOwners(e.target.value);
-  }
-
   function handleSubmit(e) {
     e.preventDefault();
-    addNewCar();
+    UpdateCar();
   }
 
-  // function GetMovies() {
-  //   axios.get(jsonUrl).then((d) => {
-  //     setDatas(d.data);
-  //   });
-  // }
-
-  // useEffect(() => {
-  //   GetMovies();
-  // });
-
-  const [currentUser, setCurrentUser] = useState({
-    id: "",
-    userName: "",
-    firstName: "",
-    lastName: "",
-    profilePicture: "",
-    email: "",
-    phoneNumber: "",
-    city: "",
-  });
-
-  function CurrentUser() {
-    var url = generalUrl + `Account/currentUser`;
-    const name = Cookies.get("username");
-    const token = Cookies.get(name);
-
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((d) => {
-        console.log(d.data);
-        setCurrentUser(d.data.user);
-      })
-      .catch((err) => {
-        console.log("Xəta:", err.response?.status, err.response?.data);
-      });
-  }
-
-  useEffect(() => {
-    CurrentUser();
-  }, []);
-
-  function addNewCar() {
-    var url = generalUrl + `Car`;
-    // const timePart = Date.now() % 1000000; // Son 6 rəqəmi götür (max: 999999)
-    // const randomPart = Math.floor(Math.random() * 1000); // 0-999 arası
-    // const uniqueId = timePart * 1000 + randomPart;
-    // console.log(uniqueId); // məsələn: 1716475373829842 (bu artıq tam ədəddir)
-
-    var obj = {
-      // Id: uniqueId,
-      Color: color,
-      Url1: imageUrl1,
-      Url2: imageUrl2,
-      Url3: imageUrl3,
-      Price: price,
-      Marka: marka,
-      Model: model,
-      Year: year,
-      BanType: banType,
-      Engine: engine,
-      March: march,
-      GearBox: selectedGearBox,
-      Gear: selectedGear,
-      IsNew: march == "0" ? "true" : "false",
-      Situation: situation,
-      Description: description,
-      UserId: currentUser.id,
-      FuelType: selectedOil,
-      City: currentUser.city,
+  function UpdateCar() {
+    const updatedCar = {
+      id: car.id,
+      marka: car.marka,
+      model: car.model,
+      color: car.color,
+      year: car.year,
+      km: car.km,
+      price: car.price,
+      description: car.description,
+      situation: car.situation,
+      banType: car.banType,
+      engine: car.engine,
+      march: car.march,
+      gearBox: car.gearBox,
+      gear: car.gear,
+      market: car.market,
+      fuelType: car.fuelType,
+      city: car.city,
+      url1: car.url1,
+      url2: car.url2,
+      url3: car.url3,
     };
 
     const name = Cookies.get("username");
     const token = Cookies.get(name);
 
-    try {
-      axios
-        .post(url, obj, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((d) => {
-          console.log(d.data);
-          alert("Car added successfully!");
-          navigate("/cars");
-        });
-    } catch (err) {
-      console.log("Xəta:", err.response?.status, err.response?.data);
-      navigate("/cars");
-    }
+    axios
+      .put(`https://localhost:7268/api/Car/${car.id}`, updatedCar, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log("Car updated successfully:", response.data);
+        alert("Car updated successfully!");
+        navigate("/myAnnouncements");
+      })
+      .catch((error) => {
+        console.error("Error updating car:", error);
+      });
   }
+
   return (
     <section
       style={{
@@ -330,8 +295,11 @@ export default function AddCar() {
             <label>Brand</label>
             <input
               required
-              value={marka}
-              onChange={(e) => setMarka(e.target.value)}
+              name="marka"
+              value={car.marka}
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
           <div
@@ -344,8 +312,11 @@ export default function AddCar() {
             <label>Model</label>
             <input
               required
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
+              name="model"
+              value={car.model}
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
         </section>
@@ -369,8 +340,11 @@ export default function AddCar() {
             <label>Gear</label>
             <select
               required
-              value={selectedGear}
-              onChange={(e) => selectNewGear(e)}
+              name="gear"
+              value={car.gear}
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
               style={{ width: "150px" }}
             >
               <option value=""></option>
@@ -389,8 +363,11 @@ export default function AddCar() {
             <label>Fuel Type</label>
             <select
               required
-              value={selectedOil}
-              onChange={(e) => selectNewOil(e)}
+              name="fuelType"
+              value={car.fuelType}
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
               style={{ width: "180px" }}
             >
               <option value=""></option>
@@ -423,8 +400,11 @@ export default function AddCar() {
             <label>Ban Type</label>
             <select
               required
-              value={banType}
-              onChange={(e) => setBanType(e.target.value)}
+              value={car.banType}
+              name="banType"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
               style={{ width: "150px" }}
             >
               <option value=""></option>
@@ -473,8 +453,11 @@ export default function AddCar() {
             <label>Gear Box</label>
             <select
               required
-              value={selectedGearBox}
-              onChange={(e) => selectNewGearBox(e)}
+              value={car.gearBox}
+              name="gearBox"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
               style={{ width: "180px" }}
             >
               <option value=""></option>
@@ -507,8 +490,11 @@ export default function AddCar() {
             <label>March</label>
             <input
               required
-              value={march}
-              onChange={(e) => setMarch(e.target.value)}
+              value={car.march}
+              name="march"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
           <div
@@ -521,8 +507,11 @@ export default function AddCar() {
             <label>Year</label>
             <input
               required
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
+              value={car.year}
+              name="year"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
         </section>
@@ -546,8 +535,11 @@ export default function AddCar() {
             <label>Color</label>
             <input
               required
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
+              value={car.color}
+              name="color"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
           <div
@@ -560,8 +552,11 @@ export default function AddCar() {
             <label>Price</label>
             <input
               required
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              value={car.price}
+              name="price"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
         </section>
@@ -585,8 +580,11 @@ export default function AddCar() {
             <label>Status</label>
             <input
               required
-              value={situation}
-              onChange={(e) => setSituation(e.target.value)}
+              value={car.situation}
+              name="situation"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
           <div
@@ -599,8 +597,11 @@ export default function AddCar() {
             <label>Engine</label>
             <input
               required
-              value={engine}
-              onChange={(e) => setEngine(e.target.value)}
+              name="engine"
+              value={car.engine}
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
         </section>
@@ -624,8 +625,11 @@ export default function AddCar() {
             <label>City</label>
             <input
               required
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              value={car.city}
+              name="city"
+              onChange={(e) =>
+                setCar({ ...car, [e.target.name]: e.target.value })
+              }
             ></input>
           </div>
         </section>
@@ -649,9 +653,9 @@ export default function AddCar() {
             <label style={{ textAlign: "center" }}>Image 1</label>
             <div className="image-upload-wrapper">
               <label htmlFor="upload-input-1" className="upload-label">
-                {imagePreview1 ? (
+                {car.url1 ? (
                   <img
-                    src={imagePreview1}
+                    src={car.url1}
                     alt="Uploaded"
                     className="preview-image"
                   />
@@ -680,9 +684,9 @@ export default function AddCar() {
             <label style={{ textAlign: "center" }}>Image 2</label>
             <div className="image-upload-wrapper">
               <label htmlFor="upload-input-2" className="upload-label">
-                {imagePreview2 ? (
+                {car.url2 ? (
                   <img
-                    src={imagePreview2}
+                    src={car.url2}
                     alt="Uploaded"
                     className="preview-image"
                   />
@@ -710,9 +714,9 @@ export default function AddCar() {
             <label style={{ textAlign: "center" }}>Image 3</label>
             <div className="image-upload-wrapper">
               <label htmlFor="upload-input-3" className="upload-label">
-                {imagePreview3 ? (
+                {car.url3 ? (
                   <img
-                    src={imagePreview3}
+                    src={car.url3}
                     alt="Uploaded"
                     className="preview-image"
                   />
@@ -744,14 +748,17 @@ export default function AddCar() {
           </label> */}
           <textarea
             required
-            value={description}
+            value={car.description}
             placeholder="Description"
-            onChange={(e) => setDescription(e.target.value)}
+            name="description"
+            onChange={(e) =>
+              setCar({ ...car, [e.target.name]: e.target.value })
+            }
           ></textarea>
         </section>
 
         <button type="submit" style={{ backgroundColor: "#f97316" }}>
-          ADD CAR
+          UPDATE CAR
         </button>
       </form>
     </section>

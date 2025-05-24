@@ -59,7 +59,7 @@ export default function Menu() {
 
   useEffect(() => {
     HandleLoggedIn();
-  }, []);
+  }, );
 
   return (
     <>

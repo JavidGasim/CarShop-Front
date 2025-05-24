@@ -21,6 +21,8 @@ export default function AllInfo() {
   const [data, setData] = useState({});
   const [color, setColor] = useState("");
 
+  const [sharer, setSharer] = useState({});
+
   const [myFavs, setMyFavs] = useState([]);
   const [selectedFavCar, setSelectedFavCar] = useState({});
 
@@ -41,12 +43,33 @@ export default function AllInfo() {
 
   useEffect(() => {
     GetMovie();
+    // GetSharer();
   }, [data]);
 
-  async function GetMovie() {
-    await axios.get(generalUrl + `Car/${id}`).then((d) => {
+  function GetMovie() {
+    axios.get(generalUrl + `Car/${id}`).then((d) => {
       setData(d.data);
+      // console.log(d.data);
+      // alert("Bombine: " + d.data.customIdentityUser.id);
+      GetSharer(d.data.customIdentityUser.id);
+      //  GetSharer();
     });
+  }
+
+  function GetSharer(userId) {
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+    // alert("Sharer: " + userId);
+
+    axios
+      .get(generalUrl + `Account/getUserById/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((d) => {
+        setSharer(d.data);
+      });
   }
 
   const SelectedCarIsFav = (favs, car) => {
@@ -110,8 +133,8 @@ export default function AllInfo() {
     e.stopPropagation();
 
     if (isFav == false) {
-      data.isFav = true;
-      data.color = "red";
+      // data.isFav = true;
+      // data.color = "red";
       // setColor("red");
       const name = Cookies.get("username");
       const token = Cookies.get(name);
@@ -122,7 +145,7 @@ export default function AllInfo() {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then((data) => console.log("Added successfully"));
+        .then((data) => alert("Added successfully"));
     } else {
       data.isFav = false;
       data.color = "black";
@@ -137,12 +160,12 @@ export default function AllInfo() {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then(() => console.log("Deleted successfully"));
+        .then(() => alert("Deleted successfully"));
     }
 
     // window.location.reload();
 
-    axios.put(url4 + `/${data.id}`, data).then((data) => console.log(data));
+    // axios.put(url4 + `/${data.id}`, data).then((data) => console.log(data));
     // dispatch(updateCar({ id: d.id, car: d }));
   }
 
@@ -497,6 +520,11 @@ export default function AllInfo() {
         </p>
       </section>
       <hr style={{ marginTop: "30px" }} />
+      <section>
+        <p style={{ fontSize: "1.2em", marginTop: "30px" }}>
+          {sharer.firstName} {sharer.lastName} - {sharer.phoneNumber}
+        </p>
+      </section>
     </section>
   );
 }

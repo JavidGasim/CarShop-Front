@@ -43,24 +43,19 @@ export default function UpdateProfile() {
     await handleUpload();
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (e) => {
     const name = Cookies.get("username");
     const token = Cookies.get(name);
 
-    if (selectedFile) {
+    const file = e.target.files[0];
+    if (file) {
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      formData.append("file", file);
 
       try {
         const uploadResponse = await axios.post(
           generalUrl + "Image/newImage",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          formData
         );
 
         // Uploaddan gələn URL-i istifadəçi obyektinə əlavə edək
@@ -102,6 +97,7 @@ export default function UpdateProfile() {
       })
       .then(() => {
         alert("Profil uğurla yeniləndi!");
+        window.location.reload();
       })
       .catch((error) => {
         alert(
@@ -140,7 +136,7 @@ export default function UpdateProfile() {
             type="file"
             id="upload-input"
             accept="image/*"
-            onChange={handleFileChange}
+            onChange={handleUpload}
             style={{ display: "none" }}
           />
         </div>
