@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useEffect } from "react";
 import axios from "axios";
 
 export default function Menu() {
@@ -33,26 +34,32 @@ export default function Menu() {
     console.log("All cookies deleted.");
   };
 
-  // if (isLoggedIn) {
-  //   const name = Cookies.get("username");
-  //   const token = Cookies.get(name);
-  //   const url = generalUrl + `Account/currentUser`;
-  //   axios
-  //     .get(url, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       // setUser(response.data.user);
-  //       console.log(response.data);
-  //       // setArtist(response.data.user);
-  //       setCurrentUser(response.data.user);
-  //     })
-  //     .catch((error) => {
-  //       alert(error.response.data.message);
-  //     });
-  // }
+  function HandleLoggedIn() {
+    if (isLoggedIn) {
+      const name = Cookies.get("username");
+      const token = Cookies.get(name);
+      const url = generalUrl + `Account/currentUser`;
+      axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          // setUser(response.data.user);
+          console.log(response.data);
+          // setArtist(response.data.user);
+          setCurrentUser(response.data.user);
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+        });
+    }
+  }
+
+  useEffect(() => {
+    HandleLoggedIn();
+  }, []);
 
   return (
     <>

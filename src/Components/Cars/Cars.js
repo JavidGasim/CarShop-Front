@@ -7,7 +7,8 @@ import { fetchCars } from "../../Features/CarsSlice";
 import { changePath } from "../../Features/FilteredDataSlice";
 
 export default function Cars() {
-  const url = "http://localhost:27001/cars";
+  // const url = "http://localhost:27001/cars";
+  const generalUrl = "https://localhost:7268/api/";
 
   const [datas, setDatas] = useState();
   const cars = useSelector((state) => state.cars.cars);
@@ -24,13 +25,19 @@ export default function Cars() {
     // var date = new Date();
     // date.setTime(date.getTime() + (30 * 24 * 60 * 60 * 1000));
     // document.cookie = `id=${id};expires=${date.toUTCString()};path=/`;
-  });
+  }, []);
 
   function GetMovies() {
+    // axios.get(url).then((d) => {
+    //   console.log(d);
+    //   setDatas(d.data);
+    // });
+    var url = generalUrl + `Car`;
     axios.get(url).then((d) => {
       console.log(d);
       setDatas(d.data);
     });
+    
   }
   return (
     <section>

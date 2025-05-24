@@ -280,6 +280,7 @@ export default function AddCar() {
       Description: description,
       UserId: currentUser.id,
       FuelType: selectedOil,
+      City: currentUser.city,
     };
 
     const name = Cookies.get("username");

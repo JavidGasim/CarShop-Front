@@ -1,178 +1,502 @@
 import React, { useEffect, useRef, useState } from "react";
-import {Link, useParams,useHistory } from 'react-router-dom';
+import { Link, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart,faChevronRight,faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import './AllInfo.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHeart,
+  faChevronRight,
+  faChevronLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import "./AllInfo.css";
 import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 export default function AllInfo() {
   const { id } = useParams();
   const url = `http://localhost:27001/cars/${id}`;
+  const url4 = "http://localhost:27001/cars";
   const url2 = "http://localhost:27002/favCars";
   const url3 = `http://localhost:27001/cars`;
-  const [data,setData] = useState({});
-  const [color,setColor] = useState("");
+  const generalUrl = `https://localhost:7268/api/`;
+  const [data, setData] = useState({});
+  const [color, setColor] = useState("");
+
+  const [myFavs, setMyFavs] = useState([]);
+  const [selectedFavCar, setSelectedFavCar] = useState({});
+
+  const [isFav, setIsFav] = useState(false);
+
   let index = useRef(0);
   const path = useSelector((state) => state.filteredData.path);
 
+  const CheckCarIsFav = async () => {
+    for (let i = 0; i < myFavs.length; i++) {
+      if (myFavs[i].id == data.id) {
+        setIsFav(true);
+        return true;
+      }
+    }
+    return false;
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     GetMovie();
-  })
+  }, [data]);
 
-  function GetMovie()
-  {
-    axios.get(url).then((d) => {
+  async function GetMovie() {
+    await axios.get(generalUrl + `Car/${id}`).then((d) => {
       setData(d.data);
     });
   }
 
-  function handleClick(e)
-  {
+  const SelectedCarIsFav = (favs, car) => {
+    console.log("favs:", favs);
+
+    console.log(
+      "Favourites carId list:",
+      favs.map((f) => f.id)
+    );
+    console.log("Current car.id:", car.id);
+
+    const matched = favs.find((f) => String(f.id) === String(car.id));
+
+    console.log("matched:", matched);
+
+    if (matched) {
+      setSelectedFavCar(matched);
+      setIsFav(true);
+      console.log(isFav);
+    } else {
+      setIsFav(false);
+      console.log(isFav);
+    }
+  };
+
+  const GetMyFavs = async () => {
+    const url = generalUrl + `Car/myFavs`;
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const favs = res.data;
+
+      console.log(favs);
+      setMyFavs(favs);
+      console.log(myFavs);
+
+      console.log("car (d):", data);
+      console.log("myFavs (favs):", favs);
+
+      SelectedCarIsFav(favs, data); // d → aktiv maşın
+    } catch (err) {
+      console.error("Favları gətirərkən xəta:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (data) {
+      GetMyFavs(); // səhifə açılanda çağırılır
+    }
+  }, [data]);
+
+  async function handleClick(e) {
     e.preventDefault();
     e.stopPropagation();
-    if(data.isFav == false)
-    {
+
+    if (isFav == false) {
       data.isFav = true;
       data.color = "red";
-      setColor("red");
-      // var cars = getCarsFromCookie();
-      // cars.push(d);
-      // setCarsCookie(cars);
-      axios.post(url2, data).then((data) => console.log(data));
-    }
-
-    else
-    {
+      // setColor("red");
+      const name = Cookies.get("username");
+      const token = Cookies.get(name);
+      setIsFav(true);
+      await axios
+        .post(generalUrl + `Car/addToFav/${data.id}`, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((data) => console.log("Added successfully"));
+    } else {
       data.isFav = false;
-      data.color = "white";
-      setColor("white");
-      // deleteCarByIdAndUpdateCookie(d.id);
-      axios.delete(url2 + `/${data.id}`).then(() => console.log("Deleted successfully"));
+      data.color = "black";
+      // setColor("white");
+      const name = Cookies.get("username");
+      const token = Cookies.get(name);
+      setIsFav(false);
+      // SelectedCarIsFav();
+      await axios
+        .delete(generalUrl + `Car/removeFromFav/${data.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(() => console.log("Deleted successfully"));
     }
 
-    axios.put(url3 + `/${data.id}`, data).then((data) => console.log(data));
+    // window.location.reload();
+
+    axios.put(url4 + `/${data.id}`, data).then((data) => console.log(data));
     // dispatch(updateCar({ id: d.id, car: d }));
   }
 
-  function changeImage()
-  {
+  function changeImage() {
     index.current++;
-    if(index.current == 3)
-    {
+    if (index.current == 3) {
       index.current = 0;
     }
+
+    console.log(index.current);
   }
 
-  function changeImage2()
-  {
+  function changeImage2() {
     index.current--;
 
-    if(index.current == -1)
-    {
+    if (index.current == -1) {
       index.current = 2;
     }
+
+    console.log(index.current);
   }
 
   return (
-    <section style={{width:"80%",backgroundColor:"red",backgroundColor:"white",marginLeft:"7%"}}>
-      
-      <Link to={`${path}`} style={{display:"flex",justifyContent:"start",marginTop:"30px",marginBottom:"30px",textDecoration:"none",color:"black"}}>
-        <h1 style={{paddingLeft:"0px",fontSize:"2em",fontWeight:"bolder"}}>{data.Marka}</h1>
-        <h1 style={{paddingLeft:"20px",fontSize:"2em",fontWeight:"bolder"}}>{data.Model}</h1>
-        <h1 style={{paddingLeft:"20px",fontSize:"2em",fontWeight:"bolder"}}>{data.Engine}</h1>
-        <h1 style={{paddingLeft:"20px",fontSize:"2em",fontWeight:"bolder"}}>{data.March}</h1>
+    <section
+      style={{
+        width: "80%",
+        backgroundColor: "white",
+        marginLeft: "7%",
+      }}
+    >
+      <Link
+        to={`${path}`}
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          marginTop: "30px",
+          marginBottom: "30px",
+          textDecoration: "none",
+          color: isFav ? "red" : "black",
+        }}
+      >
+        <h1
+          style={{ paddingLeft: "0px", fontSize: "2em", fontWeight: "bolder" }}
+        >
+          {data.Marka}
+        </h1>
+        <h1
+          style={{ paddingLeft: "20px", fontSize: "2em", fontWeight: "bolder" }}
+        >
+          {data.Model}
+        </h1>
+        <h1
+          style={{ paddingLeft: "20px", fontSize: "2em", fontWeight: "bolder" }}
+        >
+          {data.Engine}
+        </h1>
+        <h1
+          style={{ paddingLeft: "20px", fontSize: "2em", fontWeight: "bolder" }}
+        >
+          {data.March}
+        </h1>
       </Link>
 
-      <section style={{position:"relative"}}>
-        <img src={data.url} style={{width:"100%",height:"90vh",borderRadius:"10px",display:`${index.current == 0 ?"block":"none"}`}}></img>
-        <img src={data.url2} style={{width:"100%",height:"90vh",borderRadius:"10px",display:`${index.current == 1 ?"block":"none"}`}}></img>
-        <img src={data.url3} style={{width:"100%",height:"90vh",borderRadius:"10px",display:`${index.current == 2 ?"block":"none"}`}}></img>
-        <FontAwesomeIcon icon={faChevronLeft} onClick={changeImage2} className="arrow-design" />
-        <FontAwesomeIcon icon={faChevronRight} className="arrow-design" onClick={changeImage} style={{left:"90%"}}/>
-        <FontAwesomeIcon icon={faHeart} style={{position:"absolute",top:"10px",left:"93%",fontSize:"3em",color:`${data.color}`}} onClick={(e) => handleClick(e)}/>
+      <section style={{ position: "relative" }}>
+        <img
+          style={{
+            width: "100%",
+            height: "90vh",
+            borderRadius: "10px",
+            display: `${index.current == 0 ? "block" : "none"}`,
+          }}
+          src={data.url1}
+          alt="car image 1"
+        />
+        <img
+          style={{
+            width: "100%",
+            height: "90vh",
+            borderRadius: "10px",
+            display: `${index.current == 1 ? "block" : "none"}`,
+          }}
+          src={data.url2}
+          alt="car image 2"
+        />
+        <img
+          style={{
+            width: "100%",
+            height: "90vh",
+            borderRadius: "10px",
+            display: `${index.current == 2 ? "block" : "none"}`,
+          }}
+          src={data.url3}
+          alt="car image 3"
+        />
+        <FontAwesomeIcon
+          icon={faChevronLeft}
+          onClick={changeImage2}
+          className="arrow-design"
+        />
+        <FontAwesomeIcon
+          icon={faChevronRight}
+          className="arrow-design"
+          onClick={changeImage}
+          style={{ left: "90%" }}
+        />
+        <FontAwesomeIcon
+          icon={faHeart}
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "93%",
+            fontSize: "3em",
+            color: `${data.color}`,
+          }}
+          onClick={(e) => handleClick(e)}
+        />
       </section>
 
-      <hr style={{marginTop:"30px"}}/>
+      <hr style={{ marginTop: "30px" }} />
 
-      <section style={{width:"100%",display:"flex",justifyContent:"start",marginTop:"20px"}}>
-        <section style={{width:"50%",backgroundColor:"white"}}>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Şəhər</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.city}</h1>
+      <section
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "start",
+          marginTop: "20px",
+        }}
+      >
+        <section style={{ width: "50%", backgroundColor: "white" }}>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              City
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.city}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.2em",color:"grey",paddingTop:"10px"}}>Marka</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Marka}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Brand
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.marka}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Model</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Model}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Model
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.model}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Buraxılış ili</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.GraduationYear}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Year
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.year}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Ban növü</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.BanType}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Ban Type
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.banType}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Rəng</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Color}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Color
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.color}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Yürüş</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.March}</h1>
-          </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Mühərrik</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Engine}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Fuel Type
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.fuelType}
+            </h1>
           </section>
         </section>
 
-        <section style={{width:"50%",backgroundColor:"white",marginLeft:"10%"}}>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Sürətlər qutusu</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.GearBox}</h1>
+        <section
+          style={{ width: "50%", backgroundColor: "white", marginLeft: "10%" }}
+        >
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Gear Box
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.gearBox}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.2em",color:"grey",paddingTop:"10px"}}>Ötürücü</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Gear}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Gear
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.gear}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Buraxılış ili</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.GraduationYear}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Is New?
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.isNew == true ? "Yes" : "No"}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Hansı bazar üçün</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Market}</h1>
+
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Price
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.price} $
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Yeni</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.New}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Status
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.situation}
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Sahiblər</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Owners}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              March
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.march} km
+            </h1>
           </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Qiymət</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.price}</h1>
-          </section>
-          <section style={{display:"flex",justifyContent:"start"}}>
-            <h1 style={{width:"50%",fontSize:"1.3em",color:"grey",paddingTop:"10px"}}>Vəziyyəti</h1>
-            <h1 style={{width:"50%",fontSize:"1.3em",paddingTop:"10px"}}>{data.Situation}</h1>
+          <section style={{ display: "flex", justifyContent: "start" }}>
+            <h1
+              style={{
+                width: "50%",
+                fontSize: "1.3em",
+                color: "grey",
+                paddingTop: "10px",
+              }}
+            >
+              Engine
+            </h1>
+            <h1 style={{ width: "50%", fontSize: "1.3em", paddingTop: "10px" }}>
+              {data.engine}
+            </h1>
           </section>
         </section>
-
       </section>
-      <hr style={{marginTop:"30px"}}/>
+      <hr style={{ marginTop: "30px" }} />
       <section>
-        <p style={{fontSize:"1.2em",marginTop:"30px"}}>{data.Description}</p>
+        <p style={{ fontSize: "1.2em", marginTop: "30px" }}>
+          {data.description}
+        </p>
       </section>
-      <hr style={{marginTop:"30px"}}/>
+      <hr style={{ marginTop: "30px" }} />
     </section>
-  )
+  );
 }
