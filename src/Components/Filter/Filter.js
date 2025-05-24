@@ -33,6 +33,7 @@ export default function Filter() {
   const [dis, setDis] = useState("0");
 
   const url = "http://localhost:27001/cars";
+  const generalUrl = "https://localhost:7268/api/";
 
   useEffect(() => {
     FillMarka();
@@ -67,8 +68,8 @@ export default function Filter() {
   function FilterMarkas() {
     const uniqueBrands = [];
     const filtered = markas.filter((item) => {
-      if (!uniqueBrands.includes(item.Marka)) {
-        uniqueBrands.push(item.Marka);
+      if (!uniqueBrands.includes(item.marka)) {
+        uniqueBrands.push(item.marka);
         return true;
       }
       return false;
@@ -79,8 +80,8 @@ export default function Filter() {
   function FilterModel() {
     const uniqueBrands = [];
     const filtered = markas.filter((item) => {
-      if (!uniqueBrands.includes(item.Model) && item.Marka == seletedMarka) {
-        uniqueBrands.push(item.Model);
+      if (!uniqueBrands.includes(item.model) && item.marka == seletedMarka) {
+        uniqueBrands.push(item.model);
         return true;
       }
       return false;
@@ -89,7 +90,8 @@ export default function Filter() {
   }
 
   function FillMarka() {
-    axios.get(url).then((d) => {
+    axios.get(generalUrl + `Car`).then((d) => {
+      console.log("Data:", d.data);
       setMarkas(d.data);
     });
   }
@@ -130,7 +132,7 @@ export default function Filter() {
             Brand
           </option>
           {filteredMarkas &&
-            filteredMarkas.map((d) => <option d={d.Marka}>{d.Marka}</option>)}
+            filteredMarkas.map((d) => <option d={d.marka}>{d.marka}</option>)}
         </select>
         <select
           disabled={models.length == 0 ? true : false}
@@ -152,7 +154,7 @@ export default function Filter() {
           <option value="" disabled hidden>
             Model
           </option>
-          {models && models.map((d) => <option d={d.Model}>{d.Model}</option>)}
+          {models && models.map((d) => <option d={d.model}>{d.model}</option>)}
         </select>
         <section
           style={{

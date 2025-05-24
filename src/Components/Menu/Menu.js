@@ -69,6 +69,25 @@ export default function Menu() {
             CarShop
           </Link>
           <section className="auth-section">
+            <Link
+              to="/favourites"
+              style={{
+                textDecoration: "none",
+                color: "white",
+                marginRight: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#ff9b9b",
+                fontSize: "24px",
+                fontWeight: "bold",
+              }}
+            >
+              ❤️
+            </Link>
             <Link to="/profile" className="profile-link">
               <img
                 src={currentUser.profilePicture} // Buraya real şəkil yolu əlavə et

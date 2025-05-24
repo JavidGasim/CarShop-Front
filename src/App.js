@@ -12,6 +12,8 @@ import FilteredCars from "./Components/FilteredCars/FilteredCars";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Register/Register";
 import Main from "./Components/Main/Main";
+import Profile from "./Components/Profile/Profile";
+import UpdateProfile from "./Components/UpdateProfile/UpdateProfile";
 
 function App() {
   return (
@@ -77,6 +79,19 @@ function App() {
               component={Main}
             ></Route>
 
+            <Route
+              exact
+              path="/profile"
+              element={<Profile />}
+              component={Profile}
+            ></Route>
+
+            <Route
+              exact
+              path="/updateProfile"
+              element={<UpdateProfile />}
+              component={UpdateProfile}
+            ></Route>
             <Route exact path="*" element={<Cars />} component={Cars}></Route>
           </Routes>
         </section>

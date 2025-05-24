@@ -4,7 +4,7 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "js-cookie";
 import axios from "axios";
 import AllInfo from "../AllInfo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCar } from "../../Features/CarsSlice";
 import "./Car.css";
@@ -13,6 +13,8 @@ export default function Car({ d }) {
   // const url2 = "http://localhost:27002/favCars";
   const generalUrl = "https://localhost:7268/api/";
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const [myFavs, setMyFavs] = useState([]);
   const [selectedFavCar, setSelectedFavCar] = useState({});
@@ -31,7 +33,7 @@ export default function Car({ d }) {
 
   const SelectedCarIsFav = (favs, car) => {
     console.log("favs:", favs);
-    
+
     console.log(
       "Favourites carId list:",
       favs.map((f) => f.id)
@@ -101,7 +103,8 @@ export default function Car({ d }) {
         .post(`${generalUrl}Car/addToFav/${d.id}`, null, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .then((data) => console.log("Added successfully"));
+        .then((data) => console.log("Added successfully"))
+        .catch((err) => navigate("/login"));
 
       setIsFav(true);
 
