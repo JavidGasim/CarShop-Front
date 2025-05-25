@@ -280,7 +280,7 @@ export default function AddCar() {
       Description: description,
       UserId: currentUser.id,
       FuelType: selectedOil,
-      City: currentUser.city,
+      City: city,
     };
 
     const name = Cookies.get("username");
@@ -296,11 +296,11 @@ export default function AddCar() {
         .then((d) => {
           console.log(d.data);
           alert("Car added successfully!");
-          navigate("/cars");
+          navigate("/");
         });
     } catch (err) {
       console.log("Xəta:", err.response?.status, err.response?.data);
-      navigate("/cars");
+      // navigate("/cars");
     }
   }
   return (

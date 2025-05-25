@@ -370,7 +370,7 @@ export default function Filter() {
             padding: "15px 0px 15px 0px",
             textAlign: "center",
             fontSize: "1.2em",
-            backgroundColor: "#F97316 ",
+            backgroundColor: "#F97316",
             borderRadius: "10px",
             border: "2px solid black",
           }}

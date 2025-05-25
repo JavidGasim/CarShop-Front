@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./Menu.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
@@ -59,15 +60,24 @@ export default function Menu() {
 
   useEffect(() => {
     HandleLoggedIn();
-  }, );
+  });
 
   return (
     <>
       {isLoggedIn ? (
         <section className="menu-section">
-          <Link to="/" className="header-h1">
-            CarShop
-          </Link>
+          <div>
+            <Link
+              to="/info"
+              className="header-h1"
+              style={{ marginTop: "10px" }}
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </Link>
+            <Link to="/" className="header-h1">
+              CarShop
+            </Link>
+          </div>
           <section className="auth-section">
             <Link
               to="/favourites"
@@ -107,9 +117,18 @@ export default function Menu() {
         </section>
       ) : (
         <section className="menu-section">
-          <Link to="/" className="header-h1">
-            CarShop
-          </Link>
+          <div>
+            <Link
+              to="/info"
+              className="header-h1"
+              style={{ marginTop: "10px" }}
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </Link>
+            <Link to="/" className="header-h1">
+              CarShop
+            </Link>
+          </div>
           <section className="auth-section">
             <Link to="/login" className="auth-button">
               Login

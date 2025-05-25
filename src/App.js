@@ -16,6 +16,7 @@ import Profile from "./Components/Profile/Profile";
 import UpdateProfile from "./Components/UpdateProfile/UpdateProfile";
 import MyPosts from "./Components/MyPosts/MyPosts";
 import EditMyCar from "./Components/EditMyCar/EditMyCar";
+import Info from "./Components/Info/Info";
 
 function App() {
   return (
@@ -108,6 +109,14 @@ function App() {
               element={<EditMyCar />}
               component={EditMyCar}
             ></Route>
+
+            <Route
+              exact
+              path="/info"
+              element={<Info />}
+              component={Info}
+            ></Route>
+
             <Route exact path="*" element={<Cars />} component={Cars}></Route>
           </Routes>
         </section>

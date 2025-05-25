@@ -244,7 +244,11 @@ export default function Register() {
       {registerLoad ? (
         <div className="loader-container">
           <div className="loader">
-            <img style={{ width: "100px", margin: "auto" }} src="/load.gif" alt="loading" />
+            <img
+              style={{ width: "100px", margin: "auto" }}
+              src="/load.gif"
+              alt="loading"
+            />
           </div>
         </div>
       ) : (
@@ -348,7 +352,15 @@ export default function Register() {
             </button>
           )}
           {iSverifyCode ? (
-            <div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+               // ekranın ortasında olması üçün
+              }}
+            >
               <input
                 type="number"
                 name="code"
@@ -361,6 +373,7 @@ export default function Register() {
                 type="button"
                 className="register-button"
                 onClick={verifyCode}
+                style={{ marginTop: "10px" }}
               >
                 Verify
               </button>

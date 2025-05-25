@@ -10,6 +10,7 @@ import {
 import "./AllInfo.css";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export default function AllInfo() {
   const { id } = useParams();
@@ -56,6 +57,8 @@ export default function AllInfo() {
     });
   }
 
+  const navigate = useNavigate();
+
   function GetSharer(userId) {
     const name = Cookies.get("username");
     const token = Cookies.get(name);
@@ -69,6 +72,13 @@ export default function AllInfo() {
       })
       .then((d) => {
         setSharer(d.data);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigate("/login"); // Əgər 401 xətasıdırsa login səhifəsinə yönləndir
+        } else {
+          console.error("GetSharer Error:", error);
+        }
       });
   }
 
@@ -278,7 +288,7 @@ export default function AllInfo() {
             top: "10px",
             left: "93%",
             fontSize: "3em",
-            color: `${data.color}`,
+            color: isFav ? "red" : "black",
           }}
           onClick={(e) => handleClick(e)}
         />
