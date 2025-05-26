@@ -20,9 +20,13 @@ export default function AllInfo() {
   const url3 = `http://localhost:27001/cars`;
   const generalUrl = `https://localhost:7268/api/`;
   const [data, setData] = useState({});
+  const [parsedFeedbacks, setParsedFeedbacks] = useState([]);
   const [color, setColor] = useState("");
 
   const [sharer, setSharer] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+
+  const [feedback, setFeedback] = useState();
 
   const [myFavs, setMyFavs] = useState([]);
   const [selectedFavCar, setSelectedFavCar] = useState({});
@@ -31,6 +35,29 @@ export default function AllInfo() {
 
   let index = useRef(0);
   const path = useSelector((state) => state.filteredData.path);
+
+  const GetCurrentUser = async () => {
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+    const url = generalUrl + `Account/currentUser`;
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setCurrentUser(response.data.user);
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+      });
+  };
+
+  useEffect(() => {
+    GetCurrentUser();
+  }, []);
 
   const CheckCarIsFav = async () => {
     for (let i = 0; i < myFavs.length; i++) {
@@ -53,9 +80,20 @@ export default function AllInfo() {
       // console.log(d.data);
       // alert("Bombine: " + d.data.customIdentityUser.id);
       GetSharer(d.data.customIdentityUser.id);
-      //  GetSharer();
+      const parsed = parseFeedbacks(d.data.feedBacks);
+      // alert(d.data.feedBacks);
+      setParsedFeedbacks(parsed);
     });
   }
+
+  const parseFeedbacks = (feedbackList) => {
+    if (!Array.isArray(feedbackList)) return [];
+
+    return feedbackList.map((fb) => {
+      const [text, userName] = fb.split("|||").map((x) => x.trim());
+      return { text, userName };
+    });
+  };
 
   const navigate = useNavigate();
 
@@ -196,6 +234,54 @@ export default function AllInfo() {
     }
 
     console.log(index.current);
+  }
+
+  function handleSetFeedBack(e) {
+    setFeedback(e);
+  }
+
+  function handleAddFeedback() {
+    const updatedCar = {
+      id: data.id,
+      marka: data.marka,
+      model: data.model,
+      color: data.color,
+      year: data.year,
+      km: data.km,
+      price: data.price,
+      description: data.description,
+      situation: data.situation,
+      banType: data.banType,
+      engine: data.engine,
+      march: data.march,
+      gearBox: data.gearBox,
+      gear: data.gear,
+      market: data.market,
+      fuelType: data.fuelType,
+      city: data.city,
+      url1: data.url1,
+      url2: data.url2,
+      url3: data.url3,
+      feedBacks: `${feedback} ||| ${currentUser.userName}`,
+    };
+
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+
+    axios
+      .put(`https://localhost:7268/api/Car/${data.id}`, updatedCar, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log("Car updated successfully:", response.data);
+        // alert("Car updated successfully!");
+        // navigate("/myAnnouncements");
+      })
+      .catch((error) => {
+        alert("Error updating car:", error);
+      });
   }
 
   return (
@@ -534,6 +620,126 @@ export default function AllInfo() {
         <p style={{ fontSize: "1.2em", marginTop: "30px" }}>
           {sharer.firstName} {sharer.lastName} - {sharer.phoneNumber}
         </p>
+      </section>
+      <hr style={{ marginTop: "30px" }} />
+      <section style={{ marginTop: "30px" }}>
+        {data.feedBacks == (undefined || null) ? (
+          <section>
+            <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+              No Feedbacks
+            </h2>
+            {sharer.id != currentUser.id ? (
+              <section>
+                <textarea
+                  placeholder="Add Feedback"
+                  style={{
+                    width: "97.5%",
+                    height: "100px",
+                    borderRadius: "10px",
+                    padding: "10px",
+                    margin: "auto",
+                    marginBottom: "20px",
+                    marginTop: "30px",
+                  }}
+                  onChange={(e) => handleSetFeedBack(e.target.value)}
+                  value={feedback}
+                ></textarea>
+                <button
+                  style={{
+                    backgroundColor: "#f97316",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "10px",
+                    border: "none",
+                    cursor: "pointer",
+                    margin: "auto",
+                    fontSize: "1em",
+                    width: "120px",
+                  }}
+                  onClick={() => handleAddFeedback()}
+                >
+                  Add your feedback
+                </button>
+              </section>
+            ) : (
+              <textarea
+                placeholder="You can't add feedback your own post"
+                style={{
+                  width: "97.5%",
+                  height: "100px",
+                  borderRadius: "10px",
+                  padding: "10px",
+                  margin: "auto",
+                  marginBottom: "20px",
+                  marginTop: "30px",
+                }}
+                value={feedback}
+                disabled
+              ></textarea>
+            )}
+          </section>
+        ) : (
+          <section className="feedback-section">
+            <h2 className="feedback-title">Feedbacks</h2>
+            <div className="feedback-container">
+              {parsedFeedbacks.map((item, index) => (
+                <div key={index} className="feedback-card">
+                  <p className="feedback-text">"{item.text}"</p>
+                  <div className="feedback-author">— {item.userName}</div>
+                </div>
+              ))}
+            </div>
+            {sharer.id != currentUser.id ? (
+              <section>
+                <textarea
+                  placeholder="Add Feedback"
+                  style={{
+                    width: "97.5%",
+                    height: "100px",
+                    borderRadius: "10px",
+                    padding: "10px",
+                    margin: "auto",
+                    marginBottom: "20px",
+                    marginTop: "30px",
+                  }}
+                  onChange={(e) => handleSetFeedBack(e.target.value)}
+                  value={feedback}
+                ></textarea>
+                <button
+                  style={{
+                    backgroundColor: "#f97316",
+                    color: "white",
+                    padding: "10px 20px",
+                    borderRadius: "10px",
+                    border: "none",
+                    cursor: "pointer",
+                    margin: "auto",
+                    fontSize: "1em",
+                    width: "120px",
+                  }}
+                  onClick={() => handleAddFeedback()}
+                >
+                  Add your feedback
+                </button>
+              </section>
+            ) : (
+              <textarea
+                placeholder="You can't add feedback your own post"
+                style={{
+                  width: "97.5%",
+                  height: "100px",
+                  borderRadius: "10px",
+                  padding: "10px",
+                  margin: "auto",
+                  marginBottom: "20px",
+                  marginTop: "30px",
+                }}
+                value={feedback}
+                disabled
+              ></textarea>
+            )}
+          </section>
+        )}
       </section>
     </section>
   );
