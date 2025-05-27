@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { HubConnectionBuilder } from "@microsoft/signalr";
+import { toast } from "react-toastify";
 
 export default function AllInfo() {
   const { id } = useParams();
@@ -295,6 +296,17 @@ export default function AllInfo() {
       })
       .then((response) => {
         console.log("Car updated successfully:", response.data);
+        //    if (res.status === 200) {
+        // toast.success("Feedback uğurla göndərildi ✅", {
+        //   position: "top-right",
+        //   autoClose: 4000,
+        // }};
+        if (response.status === 200) {
+          toast.success("Feedback send successfully ✅", {
+            position: "top-right",
+            autoClose: 4000,
+          });
+        }
         setFeedback("");
         // alert("Car updated successfully!");
         // navigate("/myAnnouncements");
@@ -310,27 +322,25 @@ export default function AllInfo() {
         .start()
         .then(() => {
           console.log("SignalR bağlantısı quruldu.");
-
-          // Gələn feedback-i dinlə
-          connection.on("ReceiveFeedback", (d) => {
-            console.log("Carid:", d.carId);
-            console.log("Id: ", id);
-
-            console.log("Car:", data);
-
-            console.log("Carid2:", data.id);
-
-            if (d.carId == id) {
-              // setFeedbacks(prev => [...prev, data.newFeedback]);
-              console.log("Received feedback:", d.newFeedback);
-              parseFeedbacks(d.newFeedback);
-              GetMovie();
-            }
-          });
         })
         .catch((err) => console.log("Bağlantı xətası:", err));
+
+      // Mövcud səhifə - feedback yenilənməsi
+      connection.on("ReceiveFeedback", (d) => {
+        if (d.carId == id) {
+          console.log("Yeni feedback:", d.newFeedback);
+          parseFeedbacks(d.newFeedback);
+          GetMovie(); // Yaxud fetchCarDetails()
+        }
+      });
+
+      // Car sahibinə bildiriş
+      connection.on("NotifyOwner", (data) => {
+        toast.info(`Bildiriş: ${data.Message}`);
+        console.log("Sahibə bildiriş:", data);
+      });
     }
-  }, [connection, id]);
+  }, [connection]);
 
   return (
     <section
