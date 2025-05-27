@@ -11,6 +11,7 @@ import "./AllInfo.css";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 
 export default function AllInfo() {
   const { id } = useParams();
@@ -35,6 +36,22 @@ export default function AllInfo() {
 
   let index = useRef(0);
   const path = useSelector((state) => state.filteredData.path);
+
+  const [connection, setConnection] = useState(null);
+
+  useEffect(() => {
+    const username = Cookies.get("username");
+    const token = Cookies.get(username);
+
+    const newConnection = new HubConnectionBuilder()
+      .withUrl("https://localhost:7268/carHub", {
+        accessTokenFactory: () => token,
+      }) // backend URL
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+  }, []);
 
   const GetCurrentUser = async () => {
     const name = Cookies.get("username");
@@ -69,11 +86,6 @@ export default function AllInfo() {
     return false;
   };
 
-  useEffect(() => {
-    GetMovie();
-    // GetSharer();
-  }, [data]);
-
   function GetMovie() {
     axios.get(generalUrl + `Car/${id}`).then((d) => {
       setData(d.data);
@@ -85,6 +97,11 @@ export default function AllInfo() {
       setParsedFeedbacks(parsed);
     });
   }
+
+  useEffect(() => {
+    GetMovie();
+    // GetSharer();
+  }, []);
 
   const parseFeedbacks = (feedbackList) => {
     if (!Array.isArray(feedbackList)) return [];
@@ -211,6 +228,8 @@ export default function AllInfo() {
         .then(() => alert("Deleted successfully"));
     }
 
+    await GetMyFavs();
+
     // window.location.reload();
 
     // axios.put(url4 + `/${data.id}`, data).then((data) => console.log(data));
@@ -276,6 +295,7 @@ export default function AllInfo() {
       })
       .then((response) => {
         console.log("Car updated successfully:", response.data);
+        setFeedback("");
         // alert("Car updated successfully!");
         // navigate("/myAnnouncements");
       })
@@ -283,6 +303,34 @@ export default function AllInfo() {
         alert("Error updating car:", error);
       });
   }
+
+  useEffect(() => {
+    if (connection) {
+      connection
+        .start()
+        .then(() => {
+          console.log("SignalR bağlantısı quruldu.");
+
+          // Gələn feedback-i dinlə
+          connection.on("ReceiveFeedback", (d) => {
+            console.log("Carid:", d.carId);
+            console.log("Id: ", id);
+
+            console.log("Car:", data);
+
+            console.log("Carid2:", data.id);
+
+            if (d.carId == id) {
+              // setFeedbacks(prev => [...prev, data.newFeedback]);
+              console.log("Received feedback:", d.newFeedback);
+              parseFeedbacks(d.newFeedback);
+              GetMovie();
+            }
+          });
+        })
+        .catch((err) => console.log("Bağlantı xətası:", err));
+    }
+  }, [connection, id]);
 
   return (
     <section

@@ -37,7 +37,6 @@ export default function Cars() {
       console.log(d);
       setDatas(d.data);
     });
-    
   }
   return (
     <section>

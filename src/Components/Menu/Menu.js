@@ -60,7 +60,7 @@ export default function Menu() {
 
   useEffect(() => {
     HandleLoggedIn();
-  });
+  }, [isLoggedIn]);
 
   return (
     <>

@@ -21,7 +21,7 @@ import Info from "./Components/Info/Info";
 function App() {
   return (
     <Router>
-      <section style={{ paddingBottom: "100px" }}>
+      <section>
         {/* <Header></Header> */}
         <Menu></Menu>
         <section style={{ width: "73%", margin: "auto", textWrap: "wrap" }}>

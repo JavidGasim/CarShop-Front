@@ -8,7 +8,7 @@ import { Link, useNavigate, useNavigation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCar } from "../../Features/CarsSlice";
 import "../Cars/Car.css";
-export default function MyCar({ d }) {
+export default function MyCar({ d, onDelete }) {
   const url = "http://localhost:27001/cars";
   // const url2 = "http://localhost:27002/favCars";
   const generalUrl = "https://localhost:7268/api/";
@@ -129,16 +129,9 @@ export default function MyCar({ d }) {
     e.preventDefault();
     e.stopPropagation();
 
-    alert("Id: " + d.id);
-    const name = Cookies.get("username");
-    const token = Cookies.get(name);
-
-    axios
-      .delete(`${generalUrl}Car/${d.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((data) => alert("Deleted successfully"))
-      .catch((err) => alert(err));
+    if (window.confirm("Are you sure you want to delete this car?")) {
+      onDelete(d.id); // valideynə xəbər veririk, orada state yenilənəcək
+    }
   }
 
   return (

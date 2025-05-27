@@ -21,6 +21,9 @@ export default function Car({ d }) {
 
   const [isFav, setIsFav] = useState(false);
 
+  const token = Cookies.get("username");
+  const isLoggedIn = !!token;
+
   const CheckCarIsFav = async () => {
     for (let i = 0; i < myFavs.length; i++) {
       if (myFavs[i].id == d.id) {
@@ -82,7 +85,7 @@ export default function Car({ d }) {
   };
 
   useEffect(() => {
-    if (d) {
+    if (d && isLoggedIn) {
       GetMyFavs(); // səhifə açılanda çağırılır
     }
   }, [d]);
@@ -126,7 +129,7 @@ export default function Car({ d }) {
   }
 
   return (
-    <Link to={`${d.id}`} className="main-des">
+    <Link to={isLoggedIn ? `${d.id}` : "/login"} className="main-des">
       <FontAwesomeIcon
         icon={faHeart}
         style={{

@@ -31,14 +31,13 @@ export default function MyPosts() {
       .then((response) => {
         console.log(response.data);
         setCurrentUser(response.data.user);
-        if (currentUser.id != null) {
-          GetUserCar();
-        }
+        // if (currentUser.id != null) {
+        // }
       })
       .catch((error) => {
         alert(error.response.data.message);
       });
-  });
+  }, []);
 
   //   useEffect(() => {
   async function GetUserCar() {
@@ -54,7 +53,29 @@ export default function MyPosts() {
         setDatas(response.data);
       });
   }
+
+  useEffect(() => {
+    if (currentUser.id != null) {
+      GetUserCar();
+    }
+  }, [currentUser]);
   //   }, [currentUser]);
+
+  async function handleDelete(carId) {
+    const name = Cookies.get("username");
+    const token = Cookies.get(name);
+
+    axios
+      .delete(`${generalUrl}Car/${carId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(
+        (data) => alert("Deleted successfully"),
+        setDatas(datas.filter((d) => d.id !== carId))
+        // navigate("/myAnnouncements")
+      )
+      .catch((err) => alert(err));
+  }
   return (
     <section
       style={{
@@ -77,7 +98,8 @@ export default function MyPosts() {
       <section
         style={{ display: "flex", flexWrap: "wrap", justifyContent: "start" }}
       >
-        {datas && datas.map((d) => <MyCar d={d}></MyCar>)}
+        {datas &&
+          datas.map((d) => <MyCar d={d} onDelete={handleDelete}></MyCar>)}
       </section>
     </section>
   );
