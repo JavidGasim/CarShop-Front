@@ -3,6 +3,7 @@ import Car from "../Cars/Car";
 import axios from "axios";
 import Cookies from "js-cookie";
 import MyCar from "../MyCar/MyCar";
+import { toast } from "react-toastify";
 
 export default function MyPosts() {
   const [datas, setDatas] = useState();
@@ -35,7 +36,7 @@ export default function MyPosts() {
         // }
       })
       .catch((error) => {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       });
   }, []);
 
@@ -70,11 +71,11 @@ export default function MyPosts() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(
-        (data) => alert("Deleted successfully"),
+        (data) => toast.success("Deleted successfully"),
         setDatas(datas.filter((d) => d.id !== carId))
         // navigate("/myAnnouncements")
       )
-      .catch((err) => alert(err));
+      .catch((err) => toast.error(err));
   }
   return (
     <section

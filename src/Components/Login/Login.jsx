@@ -3,6 +3,7 @@ import "./Login.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 export default function Login() {
   var generalUrl = "https://localhost:7268/api/";
@@ -43,11 +44,11 @@ export default function Login() {
         Cookies.set("role", response.data.role, { expires: 30 });
         console.log(response.data.role);
         // alert("Login successfully!");
-        window.location.href = "/main";
+        window.location.href = "/";
       })
       .catch((error) => {
-        alert("Not found User!");
-        alert(error.response.data.message);
+        toast.error("Not found User!");
+        // alert(error.response.data.message);
       })
       .finally(() => setLoginLoad(false));
   }

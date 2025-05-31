@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 export default function UpdateProfile() {
   const [currentUser, setCurrentUser] = useState({
@@ -34,7 +35,7 @@ export default function UpdateProfile() {
         setCurrentUser(response.data.user);
       })
       .catch((error) => {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       });
   }, []);
 
@@ -60,11 +61,11 @@ export default function UpdateProfile() {
 
         // Uploaddan gələn URL-i istifadəçi obyektinə əlavə edək
         // updatedUser.profilePicture = uploadResponse.data.imageUrl;
-        alert("Şəkil yükləndi.");
+        // toast.success("Şəkil yükləndi.");
 
         setUploadImg(uploadResponse.data.imageUrl);
       } catch (uploadError) {
-        alert("Şəkil yüklənərkən xəta baş verdi.");
+        // alert("Şəkil yüklənərkən xəta baş verdi.");
         return;
       }
     }
@@ -96,12 +97,12 @@ export default function UpdateProfile() {
         },
       })
       .then(() => {
-        alert("Profil uğurla yeniləndi!");
+        toast.success("Profile updated!");
         window.location.reload();
       })
       .catch((error) => {
-        alert(
-          error.response?.data?.message || "Yeniləmə zamanı xəta baş verdi."
+        toast.error(
+          error.response?.data?.message || "Error updating profile."
         );
       });
   };

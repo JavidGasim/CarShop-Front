@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function Menu() {
   const token = Cookies.get("username");
@@ -53,7 +54,7 @@ export default function Menu() {
           setCurrentUser(response.data.user);
         })
         .catch((error) => {
-          alert(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     }
   }

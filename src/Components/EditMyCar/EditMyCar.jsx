@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./EditMyCar.css";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 export default function EditMyCar() {
   const { id } = useParams();
@@ -87,7 +88,7 @@ export default function EditMyCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -133,7 +134,7 @@ export default function EditMyCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -179,7 +180,7 @@ export default function EditMyCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -260,7 +261,7 @@ export default function EditMyCar() {
       })
       .then((response) => {
         console.log("Car updated successfully:", response.data);
-        alert("Car updated successfully!");
+        toast.success("Car updated successfully!");
         navigate("/myAnnouncements");
       })
       .catch((error) => {

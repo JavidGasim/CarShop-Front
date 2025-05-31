@@ -4,6 +4,7 @@ import axios from "axios";
 import { faMarker } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function AddCar() {
   const cookies = document.cookie.split(";");
@@ -68,7 +69,7 @@ export default function AddCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -112,7 +113,7 @@ export default function AddCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -156,7 +157,7 @@ export default function AddCar() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -295,7 +296,7 @@ export default function AddCar() {
         })
         .then((d) => {
           console.log(d.data);
-          alert("Car added successfully!");
+          toast.success("Car added successfully!");
           navigate("/");
         });
     } catch (err) {

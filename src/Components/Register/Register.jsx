@@ -3,6 +3,7 @@ import "./Register.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const generalUrl = "https://localhost:7268/api/";
@@ -45,7 +46,7 @@ export default function Register() {
     ];
 
     if (!allowedFormats.includes(file.type)) {
-      alert("Yalnız şəkil formatında fayllara icazə verilir!");
+      toast.error("Yalnız şəkil formatında fayllara icazə verilir!");
       return;
     }
 
@@ -130,7 +131,7 @@ export default function Register() {
       // RegisterUser();
       sendCode();
     } else {
-      alert(message);
+      toast.info(message);
     }
   };
 
@@ -194,10 +195,10 @@ export default function Register() {
       setiSVerifyCode(true);
       setIsCodeSent(false);
       setMessage("Verification code sent to your email!");
-      alert("send successfuly");
+      toast.success("send successfuly");
     } catch (error) {
       setMessage("Error sending code, try again!");
-      alert(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -220,16 +221,18 @@ export default function Register() {
       // });
 
       const verify = Cookies.get("code");
-      alert(verify);
+      // alert(verify);
 
       if (verify == code) {
         Cookies.remove("code");
         setiSVerifyCode(false);
         setMessage("Verification successful! You can complete registration.");
-        alert("Verification successful! You can complete registration.");
+        toast.success(
+          "Verification successful! You can complete registration."
+        );
         RegisterUser();
       } else {
-        alert("Invalid code. Please try again.");
+        toast.error("Invalid code. Please try again.");
       }
 
       // Burada növbəti addıma keçid edə bilərsən, məsələn qeydiyyat formu göstərmək
@@ -358,7 +361,7 @@ export default function Register() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-               // ekranın ortasında olması üçün
+                // ekranın ortasında olması üçün
               }}
             >
               <input

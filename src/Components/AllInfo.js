@@ -69,7 +69,7 @@ export default function AllInfo() {
         setCurrentUser(response.data.user);
       })
       .catch((error) => {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       });
   };
 
@@ -211,7 +211,7 @@ export default function AllInfo() {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then((data) => alert("Added successfully"));
+        .then((data) => toast.success("Added successfully"));
     } else {
       data.isFav = false;
       data.color = "black";
@@ -226,7 +226,7 @@ export default function AllInfo() {
             Authorization: `Bearer ${token}`,
           },
         })
-        .then(() => alert("Deleted successfully"));
+        .then(() => toast.success("Deleted successfully"));
     }
 
     await GetMyFavs();
@@ -312,7 +312,7 @@ export default function AllInfo() {
         // navigate("/myAnnouncements");
       })
       .catch((error) => {
-        alert("Error updating car:", error);
+        toast.error("Error updating car:", error);
       });
   }
 
@@ -330,17 +330,21 @@ export default function AllInfo() {
         if (d.carId == id) {
           console.log("Yeni feedback:", d.newFeedback);
           parseFeedbacks(d.newFeedback);
-          GetMovie(); // Yaxud fetchCarDetails()
+          //GetMovie(); // Yaxud fetchCarDetails()
         }
       });
 
       // Car sahibinə bildiriş
-      connection.on("NotifyOwner", (data) => {
-        toast.info(`Bildiriş: ${data.Message}`);
-        console.log("Sahibə bildiriş:", data);
-      });
+      // connection.on("NotifyOwner", (data) => {
+      //   toast.info(`Bildiriş: ${data.message}`);
+      //   console.log("Sahibə bildiriş:", data);
+      // });
     }
   }, [connection]);
+
+  useEffect(() => {
+    GetMovie();
+  }, [parsedFeedbacks]);
 
   return (
     <section
