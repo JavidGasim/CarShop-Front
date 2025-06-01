@@ -162,7 +162,7 @@ export default function FilteredCar({ d }) {
         }}
       >
         <p>{d.year}</p>
-        <p style={{ marginLeft: "10px" }}>{d.march}</p>
+        <p style={{ marginLeft: "10px" }}>{d.march} km</p>
       </section>
       <p style={{ marginLeft: "10px", fontSize: "1.3em" }}>{d.engine}</p>
       <p style={{ marginLeft: "10px", fontSize: "1.3em", color: "grey" }}>
